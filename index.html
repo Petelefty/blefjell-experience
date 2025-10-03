@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2D5016">
+    <title>Blefjell Experience - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f9fafb;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 448px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #f9fafb;
+            position: relative;
+            padding-bottom: 80px;
+        }
+        .hidden { display: none; }
+        
+        /* Install Banner */
+        .install-banner {
+            background: linear-gradient(to right, #16a34a, #15803d);
+            color: white;
+            padding: 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .install-content {
+            max-width: 448px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .install-text { flex: 1; }
+        .install-title { font-weight: bold; margin-bottom: 4px; }
+        .install-subtitle { font-size: 12px; opacity: 0.9; }
+        .btn-install {
+            background: white;
+            color: #16a34a;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Hero */
+        .hero {
+            background: linear-gradient(to bottom right, #166534, #16a34a);
+            color: white;
+            padding: 24px;
+            border-radius: 0 0 24px 24px;
+        }
+        .hero h1 { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+        .hero-subtitle { color: #bbf7d0; margin-bottom: 16px; }
+        .hero-card {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .hero-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .hero-row:last-child { margin-bottom: 0; }
+        .hero-row span:last-child { font-weight: 600; }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .btn-copy {
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+        .wifi-pass {
+            font-family: monospace;
+            font-size: 14px;
+            color: #4b5563;
+        }
+        .border-blue { border-left: 4px solid #3b82f6; }
+        .border-red { border-left: 4px solid #ef4444; }
+        .border-orange { border-left: 4px solid #f97316; }
+        
+        /* Section */
+        .section {
+            padding: 16px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .guide-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s;
+        }
+        .guide-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        .guide-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .guide-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Activity Card */
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+        }
+        .activity-icon { font-size: 40px; }
+        .activity-content { flex: 1; }
+        .activity-title { font-weight: bold; margin-bottom: 4px; }
+        .activity-desc { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+        .activity-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+            z-index: 30;
+        }
+        .nav-content {
+            max-width: 448px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+        .nav-item.active { color: #16a34a; }
+        .nav-icon { font-size: 24px; }
+        .nav-label { font-size: 12px; margin-top: 4px; font-weight: 500; }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+            display: flex;
+            align-items: flex-end;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 448px;
+            margin: 0 auto;
+            border-radius: 24px 24px 0 0;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .modal-title { font-size: 20px; font-weight: bold; }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .modal-body { padding: 24px; }
+        
+        /* Weather */
+        .weather-current {
+            text-align: center;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        .weather-icon { font-size: 64px; margin-bottom: 8px; }
+        .weather-temp { font-size: 48px; font-weight: bold; }
+        .weather-condition { color: #6b7280; margin-top: 4px; }
+        
+        .forecast-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 8px;
+        }
+        .forecast-day { font-weight: 600; width: 100px; }
+        .forecast-icon { font-size: 32px; }
+        .forecast-temp { font-weight: bold; font-size: 18px; width: 60px; text-align: right; }
+        
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            background: #ef4444;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary:hover { background: #dc2626; }
+        
+        /* Tip Card */
+        .tip-card {
+            background: linear-gradient(to right, #fef3c7, #fed7aa);
+            border: 1px solid #fde047;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .tip-icon { font-size: 24px; }
+        .tip-content { flex: 1; }
+        .tip-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .tip-desc { font-size: 12px; color: #78716c; }
+        
+        /* Service Card */
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+        }
+        .service-header {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .service-icon { font-size: 40px; }
+        .service-info { flex: 1; }
+        .service-name { font-weight: bold; margin-bottom: 4px; }
+        .service-desc { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+        .service-hours { font-size: 12px; color: #9ca3af; }
+        .btn-call {
+            background: #22c55e;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .checklist-item input {
+            width: 20px;
+            height: 20px;
+        }
+        .checklist-item.checked label {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        
+        .content-wrapper {
+            padding-top: 0;
+        }
+        .content-wrapper.with-banner {
+            padding-top: 80px;
+        }
+        
+        .guide-step {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container"></div>
+
+    <script>
+        // Mock Data
+        const mockBooking = {
+            guestName: "Maria",
+            cabinName: "Fjellro Aktiv",
+            checkIn: "2025-10-10",
+            checkOut: "2025-10-15",
+            wifiPassword: "Blefjell2025!",
+            emergencyPhone: "+47 900 00 000"
+        };
+
+        const mockActivities = [
+            { id: 1, name: "Bletoppen", distance: "4.9 km", duration: "2-3 timer", description: "Populær topptur med fantastisk utsikt over Blefjell", image: "🏔️" },
+            { id: 2, name: "Skiløype - Blå rute", distance: "8 km", duration: "1-2 timer", description: "Familievennlig løype perfekt for nybegynnere", image: "⛷️" },
+            { id: 3, name: "Storsjøen fisking", distance: "1.5 km", duration: "Hele dagen", description: "Rik på ørret. Fiskekort kjøpes på Blestua", image: "🎣" }
+        ];
+
+        const mockWeather = {
+            current: { temp: -5, condition: "Lettskyet", wind: "3 m/s", snow: "45 cm" },
+            forecast: [
+                { day: "I dag", temp: -5, condition: "☀️" },
+                { day: "I morgen", temp: -8, condition: "🌨️" },
+                { day: "Søndag", temp: -3, condition: "☁️" },
+                { day: "Mandag", temp: -6, condition: "❄️" }
+            ]
+        };
+
+        const mockServices = [
+            { id: 1, name: "Blestua Kafé", description: "Butikk og kafeteria - 1.5 km", phone: "+47 900 11 111", hours: "08:00 - 20:00", icon: "☕" },
+            { id: 2, name: "Ski Utleie", description: "Alpint og langrenn - 3 km", phone: "+47 900 22 222", hours: "09:00 - 17:00", icon: "🎿" },
+            { id: 3, name: "Taxi Blefjell", description: "Transport til/fra Oslo", phone: "+47 900 33 333", hours: "24/7", icon: "🚗" }
+        ];
+
+        const mockTips = [
+            { id: 1, title: "Beste solnedgang", description: "Gå til Utsiktspunktet kl 16:00", icon: "🌅" },
+            { id: 2, title: "Skjult perle", description: "Isfall ved Fossestien - få kjenner til denne!", icon: "💎" },
+            { id: 3, title: "Familie-tips", description: "Aking i Kjelkeløypa - sikkert og moro!", icon: "🛷" }
+        ];
+
+        const cabinGuide = {
+            wifi: { title: "WiFi", icon: "📶", content: "Nettverk: Blefjell_Gjest\nPassord: Blefjell2025!" },
+            heating: { title: "Oppvarming", icon: "🔥", steps: ["1. Åpne ildstedet", "2. Legg ved (ligger i uthus)", "3. Bruk fyrstikker", "4. La døren stå på gløtt i 5 min", "5. Lukk når ilden brenner"] },
+            kitchen: { title: "Kjøkken", icon: "🍳", content: "Fullt utstyrt med oppvaskmaskin, komfyr og kjøleskap." },
+            checkout: { title: "Checkout", icon: "✅", items: ["Slukk alle lys", "Steng alle vinduer", "Lås døren", "Kast søppel", "Slukk peisen"] }
+        };
+
+        // State
+        let state = {
+            activeTab: 'home',
+            showInstall: true,
+            wifiCopied: false,
+            selectedActivity: null,
+            showGuideSection: null,
+            showIssueReport: false,
+            checklist: {}
+        };
+
+        // Render functions
+        function render() {
+            const app = document.getElementById('app');
+            
+            let installHTML = '';
+            if (state.showInstall) {
+                installHTML = '<div class="install-banner"><div class="install-content"><div class="install-text"><div class="install-title">📱 Installer Blefjell Experience</div><div class="install-subtitle">Få raskere tilgang</div></div><button class="btn-install" onclick="closeInstall()">OK</button></div></div>';
+            }
+            
+            let contentClass = 'content-wrapper';
+            if (state.showInstall) {
+                contentClass += ' with-banner';
+            }
+            
+            let tabHTML = renderTab();
+            let navHTML = renderBottomNav();
+            let modalsHTML = '';
+            
+            if (state.selectedActivity) {
+                modalsHTML += renderActivityModal();
+            }
+            if (state.showGuideSection) {
+                modalsHTML += renderGuideModal();
+            }
+            if (state.showIssueReport) {
+                modalsHTML += renderIssueModal();
+            }
+            
+            app.innerHTML = installHTML + '<div class="' + contentClass + '">' + tabHTML + '</div>' + navHTML + modalsHTML;
+        }
+
+        function renderTab() {
+            if (state.activeTab === 'home') return renderHome();
+            if (state.activeTab === 'activities') return renderActivities();
+            if (state.activeTab === 'weather') return renderWeather();
+            if (state.activeTab === 'services') return renderServices();
+            if (state.activeTab === 'more') return renderMore();
+            return '';
+        }
+
+        function renderBottomNav() {
+            const tabs = ['home', 'activities', 'weather', 'services', 'more'];
+            let html = '<nav class="bottom-nav"><div class="nav-content">';
+            
+            for (let i = 0; i < tabs.length; i++) {
+                const tab = tabs[i];
+                const activeClass = state.activeTab === tab ? ' active' : '';
+                html += '<button class="nav-item' + activeClass + '" onclick="setTab(\'' + tab + '\')">';
+                html += '<div class="nav-icon">' + getTabIcon(tab) + '</div>';
+                html += '<div class="nav-label">' + getTabLabel(tab) + '</div>';
+                html += '</button>';
+            }
+            
+            html += '</div></nav>';
+            return html;
+        }
+
+        function renderHome() {
+            let html = '<div class="hero">';
+            html += '<h1>Velkommen ' + mockBooking.guestName + '! 👋</h1>';
+            html += '<div class="hero-subtitle">Din hytte: ' + mockBooking.cabinName + '</div>';
+            html += '<div class="hero-card">';
+            html += '<div class="hero-row"><span>Innsjekk:</span><span>' + mockBooking.checkIn + '</span></div>';
+            html += '<div class="hero-row"><span>Utsjekk:</span><span>' + mockBooking.checkOut + '</span></div>';
+            html += '</div></div>';
+            
+            html += '<div class="section">';
+            html += '<div class="card border-blue">';
+            html += '<div class="card-header"><div class="card-title"><span>📶</span><span>WiFi Passord</span></div>';
+            html += '<button class="btn-copy" onclick="copyWifi()">' + (state.wifiCopied ? '✓ Kopiert!' : 'Kopier') + '</button></div>';
+            html += '<div class="wifi-pass">' + mockBooking.wifiPassword + '</div></div>';
+            
+            html += '<div class="card border-red"><div class="card-header"><div class="card-title"><span>📞</span><span>Nødnummer</span></div></div>';
+            html += '<a href="tel:' + mockBooking.emergencyPhone + '" style="color: #ef4444; font-weight: 600; text-decoration: none;">' + mockBooking.emergencyPhone + '</a></div>';
+            
+            html += '<div class="card border-orange"><div class="card-header"><div class="card-title"><span>☁️</span><span>Været i dag</span></div></div>';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 24px; font-weight: bold;">' + mockWeather.current.temp + '°C</span>';
+            html += '<span style="color: #6b7280;">' + mockWeather.current.condition + '</span></div>';
+            html += '<div style="font-size: 14px; color: #9ca3af; margin-top: 4px;">Snødybde: ' + mockWeather.current.snow + ' • Vind: ' + mockWeather.current.wind + '</div></div>';
+            html += '</div>';
+            
+            html += '<div class="section"><div class="section-title">Hytteguide</div><div class="grid-2">';
+            const guideKeys = Object.keys(cabinGuide);
+            for (let i = 0; i < guideKeys.length; i++) {
+                const key = guideKeys[i];
+                const section = cabinGuide[key];
+                html += '<div class="guide-card" onclick="showGuide(\'' + key + '\')">';
+                html += '<div class="guide-icon">' + section.icon + '</div>';
+                html += '<div class="guide-title">' + section.title + '</div>';
+                html += '</div>';
+            }
+            html += '</div></div>';
+            
+            html += '<div class="section"><div class="section-title">Insider Tips</div>';
+            for (let i = 0; i < 2; i++) {
+                const tip = mockTips[i];
+                html += '<div class="tip-card"><div class="tip-icon">' + tip.icon + '</div><div class="tip-content">';
+                html += '<div class="tip-title">' + tip.title + '</div>';
+                html += '<div class="tip-desc">' + tip.description + '</div>';
+                html += '</div></div>';
+            }
+            html += '</div>';
+            
+            html += '<div class="section"><button class="btn-primary" onclick="showIssue()">⚠️ Rapporter problem</button></div>';
+            
+            return html;
+        }
+
+        function renderActivities() {
+            let html = '<div class="hero" style="background: linear-gradient(to bottom right, #1e40af, #3b82f6);">';
+            html += '<h1>Aktiviteter 🗺️</h1><div class="hero-subtitle">Opplev det beste av Blefjell</div></div>';
+            html += '<div class="section">';
+            
+            for (let i = 0; i < mockActivities.length; i++) {
+                const activity = mockActivities[i];
+                html += '<div class="activity-card" onclick="showActivity(' + activity.id + ')">';
+                html += '<div class="activity-icon">' + activity.image + '</div><div class="activity-content">';
+                html += '<div class="activity-title">' + activity.name + '</div>';
+                html += '<div class="activity-desc">' + activity.description + '</div>';
+                html += '<div class="activity-meta"><span>📍 ' + activity.distance + '</span><span>⏱️ ' + activity.duration + '</span></div>';
+                html += '</div></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderWeather() {
+            let html = '<div class="hero" style="background: linear-gradient(to bottom right, #075985, #0284c7);">';
+            html += '<h1>Vær & Forhold ⛅</h1><div class="hero-subtitle">Blefjell</div></div>';
+            html += '<div class="section"><div class="weather-current">';
+            html += '<div class="weather-icon">☀️</div><div class="weather-temp">' + mockWeather.current.temp + '°C</div>';
+            html += '<div class="weather-condition">' + mockWeather.current.condition + '</div></div>';
+            
+            html += '<div class="section-title">Varsel</div>';
+            for (let i = 0; i < mockWeather.forecast.length; i++) {
+                const day = mockWeather.forecast[i];
+                html += '<div class="forecast-card"><div class="forecast-day">' + day.day + '</div>';
+                html += '<div class="forecast-icon">' + day.condition + '</div>';
+                html += '<div class="forecast-temp">' + day.temp + '°C</div></div>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function renderServices() {
+            let html = '<div class="hero" style="background: linear-gradient(to bottom right, #7e22ce, #a855f7);">';
+            html += '<h1>Tjenester 🛎️</h1><div class="hero-subtitle">Alt du trenger på Blefjell</div></div>';
+            html += '<div class="section">';
+            
+            for (let i = 0; i < mockServices.length; i++) {
+                const service = mockServices[i];
+                html += '<div class="service-card"><div class="service-header">';
+                html += '<div class="service-icon">' + service.icon + '</div><div class="service-info">';
+                html += '<div class="service-name">' + service.name + '</div>';
+                html += '<div class="service-desc">' + service.description + '</div>';
+                html += '<div class="service-hours">🕐 ' + service.hours + '</div>';
+                html += '</div></div>';
+                html += '<a href="tel:' + service.phone + '" style="text-decoration: none;">';
+                html += '<button class="btn-call"><span>📞</span><span>Ring ' + service.phone + '</span></button>';
+                html += '</a></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderMore() {
+            let html = '<div class="hero" style="background: linear-gradient(to bottom right, #374151, #6b7280);">';
+            html += '<h1>Mer 📋</h1><div class="hero-subtitle">Innstillinger og info</div></div>';
+            html += '<div class="section"><div class="card">';
+            html += '<div class="section-title" style="margin-bottom: 16px;">✅ Checkout sjekkliste</div>';
+            
+            const items = cabinGuide.checkout.items;
+            for (let i = 0; i < items.length; i++) {
+                const checked = state.checklist[i] ? ' checked' : '';
+                const checkedAttr = state.checklist[i] ? ' checked' : '';
+                html += '<div class="checklist-item' + checked + '">';
+                html += '<input type="checkbox"' + checkedAttr + ' onchange="toggleCheck(' + i + ')">';
+                html += '<label>' + items[i] + '</label></div>';
+            }
+            
+            html += '</div></div>';
+            return html;
+        }
+
+        function renderActivityModal() {
+            const activity = mockActivities.find(function(a) { return a.id === state.selectedActivity; });
+            if (!activity) return '';
+            
+            let html = '<div class="modal-overlay" onclick="closeActivity()">';
+            html += '<div class="modal-content" onclick="event.stopPropagation()">';
+            html += '<div class="modal-header"><div class="modal-title">' + activity.name + '</div>';
+            html += '<button class="btn-close" onclick="closeActivity()">✕</button></div>';
+            html += '<div class="modal-body">';
+            html += '<div style="text-align: center; font-size: 64px; margin-bottom: 16px;">' + activity.image + '</div>';
+            html += '<p style="color: #374151; margin-bottom: 16px;">' + activity.description + '</p>';
+            html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">';
+            html += '<div style="background: #f9fafb; border-radius: 8px; padding: 12px; text-align: center;">';
+            html += '<div style="font-size: 14px; color: #6b7280;">Avstand</div>';
+            html += '<div style="font-weight: bold;">' + activity.distance + '</div></div>';
+            html += '<div style="background: #f9fafb; border-radius: 8px; padding: 12px; text-align: center;">';
+            html += '<div style="font-size: 14px; color: #6b7280;">Tid</div>';
+            html += '<div style="font-weight: bold;">' + activity.duration + '</div></div></div>';
+            html += '<button style="width: 100%; background: #3b82f6; color: white; padding: 16px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; font-size: 16px;">';
+            html += '🧭 Start navigering</button></div></div></div>';
+            return html;
+        }
+
+        function renderGuideModal() {
+            const guide = cabinGuide[state.showGuideSection];
+            if (!guide) return '';
+            
+            let html = '<div class="modal-overlay" onclick="closeGuide()">';
+            html += '<div class="modal-content" onclick="event.stopPropagation()">';
+            html += '<div class="modal-header"><div class="modal-title">' + guide.title + '</div>';
+            html += '<button class="btn-close" onclick="closeGuide()">✕</button></div>';
+            html += '<div class="modal-body">';
+            html += '<div style="text-align: center; font-size: 64px; margin-bottom: 16px;">' + guide.icon + '</div>';
+            
+            if (guide.steps) {
+                for (let i = 0; i < guide.steps.length; i++) {
+                    html += '<div class="guide-step">' + guide.steps[i] + '</div>';
+                }
+            } else {
+                html += '<p style="white-space: pre-line; color: #374151;">' + guide.content + '</p>';
+            }
+            
+            html += '</div></div></div>';
+            return html;
+        }
+
+        function renderIssueModal() {
+            let html = '<div class="modal-overlay" onclick="closeIssue()">';
+            html += '<div class="modal-content" onclick="event.stopPropagation()">';
+            html += '<div class="modal-header"><div class="modal-title">Rapporter problem</div>';
+            html += '<button class="btn-close" onclick="closeIssue()">✕</button></div>';
+            html += '<div class="modal-body">';
+            html += '<select style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 14px;">';
+            html += '<option>Velg kategori</option>';
+            html += '<option>Oppvarming</option>';
+            html += '<option>Vann/Rør</option>';
+            html += '<option>Elektrisitet</option>';
+            html += '<option>Kjøkken</option>';
+            html += '<option>Annet</option>';
+            html += '</select>';
+            html += '<textarea placeholder="Beskriv problemet..." style="width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 14px; resize: vertical;" rows="4"></textarea>';
+            html += '<button style="width: 100%; background: #f3f4f6; color: #374151; padding: 12px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">';
+            html += '<span>📷</span><span>Legg til bilde</span></button>';
+            html += '<button style="width: 100%; background: #ef4444; color: white; padding: 16px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; font-size: 16px;">';
+            html += 'Send rapport</button>';
+            html += '</div></div></div>';
+            return html;
+        }
+
+        // Helper functions
+        function getTabIcon(tab) {
+            if (tab === 'home') return '🏠';
+            if (tab === 'activities') return '🗺️';
+            if (tab === 'weather') return '☁️';
+            if (tab === 'services') return '🔔';
+            if (tab === 'more') return '☰';
+            return '';
+        }
+
+        function getTabLabel(tab) {
+            if (tab === 'home') return 'Hjem';
+            if (tab === 'activities') return 'Aktiviteter';
+            if (tab === 'weather') return 'Vær';
+            if (tab === 'services') return 'Tjenester';
+            if (tab === 'more') return 'Mer';
+            return '';
+        }
+
+        // Event handlers
+        function setTab(tab) {
+            state.activeTab = tab;
+            render();
+        }
+
+        function closeInstall() {
+            state.showInstall = false;
+            render();
+        }
+
+        function copyWifi() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(mockBooking.wifiPassword);
+            }
+            state.wifiCopied = true;
+            render();
+            setTimeout(function() {
+                state.wifiCopied = false;
+                render();
+            }, 2000);
+        }
+
+        function showActivity(id) {
+            state.selectedActivity = id;
+            render();
+        }
+
+        function closeActivity() {
+            state.selectedActivity = null;
+            render();
+        }
+
+        function showGuide(key) {
+            state.showGuideSection = key;
+            render();
+        }
+
+        function closeGuide() {
+            state.showGuideSection = null;
+            render();
+        }
+
+        function showIssue() {
+            state.showIssueReport = true;
+            render();
+        }
+
+        function closeIssue() {
+            state.showIssueReport = false;
+            render();
+        }
+
+        function toggleCheck(index) {
+            state.checklist[index] = !state.checklist[index];
+            render();
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
